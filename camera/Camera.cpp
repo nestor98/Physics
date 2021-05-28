@@ -5,9 +5,7 @@ Camera::Camera(const sf::View& v) : sf::View(v)
 }
 void Camera::moveByMouse(const sf::Vector2i& pos)
 {
-	if (!dragging) {
-		dragging = true;
-	}
+	if (!dragging) dragging = true;
 	else {
 		sf::Vector2f dif = utils::toVector2f(lastMousePos - pos);
 		move(dif * m_zoom);

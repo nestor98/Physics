@@ -56,7 +56,7 @@ void ps::ParticleSystemTest::update()
     if (pressed) loadNextPSettings();
     else {
         if (ImGui::Button(pSettings.gravity ? "Gravity ON" : "Gravity OFF")) pSettings.gravity = !pSettings.gravity;
-        ImGui::DragFloat("LifeTime", &ttl, 0.05f, 0.0f, 5.0f);
+        ImGui::DragFloat("LifeTime", &ttl, 0.05f, 0.0f, 10.0f);
         ImGui::DragFloat("Size Ini", &pSettings.sizeIni, 0.10f, 0.0f, 500.0f);
         ImGui::DragFloat("Size End", &pSettings.sizeEnd, 0.10f, 0.0f, 500.0f);
         ImGui::DragFloat2("Vel", vel, 5, -1000, 1000);
@@ -78,15 +78,16 @@ void ps::ParticleSystemTest::captureEvents()
         cam.moveByMouse(sf::Mouse::getPosition());
         window.setView(cam);
     }
-    else {
+    /*else {
         cam.resetDrag();
-    }
+    }*/
     sf::Event event;
     while (window.pollEvent(event)) {
         ImGui::SFML::ProcessEvent(event);
         if (event.type == sf::Event::Closed) {
             window.close();
-        }  
+        }
+        else if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Right) cam.resetDrag();
         else if (event.type == sf::Event::KeyPressed && event.key.control && event.key.code == sf::Keyboard::S) 
         { // Save
             if (!Resources::getInstance().savePSettings(pSettings)) std::cerr << "Error saving particle settings\n";
