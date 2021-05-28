@@ -5,6 +5,7 @@
 // RNG
 #include "RNG.h"
 
+#include "../collisions/QuadTree.h"
 
 // SFML:
 #include <SFML/Graphics.hpp>
