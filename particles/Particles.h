@@ -3,9 +3,9 @@
 #include "../utils/utils.h"
 //#include "../resource.h"
 
-#include "../RNG.h"
+#include "../utils/RNG.h"
 #include "../utils/utils.h"
-#include "../physics.h"
+#include "../utils/physics.h"
 
 
 namespace ps{

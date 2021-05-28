@@ -1,5 +1,5 @@
 #pragma once
-#include "../resource.h"
+#include "resource.h"
 //#include "../particles/ParticleSystem.h"
 
 class ps::ParticleSystem;

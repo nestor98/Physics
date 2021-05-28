@@ -1,7 +1,7 @@
-#include "resource.h"
-#include "ParticleSystemTest.h"
+#include "utils/resource.h"
+#include "particles/ParticleSystemTest.h"
 
-
+ 
 void testRNG(long N_TESTS = 10000000) {
     int min = 0, max = 10;
     float avg1, avg = 0;
