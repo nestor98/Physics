@@ -1,0 +1,203 @@
+
+#pragma warning( disable : 4244 ) 
+
+#include <iostream>
+#include "ParticleSystem.h"
+//#include "Resources.h"
+
+
+
+namespace ps {
+
+	/*ParticleSystem::ParticleSystem(int nParticles) 
+		: particles(nParticles), vertices(sf::Quads, nParticles *4), index(nParticles-1), tex(nullptr)
+	{
+		std::cout << "index: " << index << "\n";
+		particles.resize(nParticles);
+		pSettings.count = nParticles;
+	}*/
+	
+	ParticleSystem::ParticleSystem(Settings& particleSettings)
+		: pSettings(particleSettings), particles(particleSettings.count), vertices(sf::Quads, particleSettings.count * 4), index(particleSettings.count - 1), tex(nullptr)
+	{
+		particles.resize(particleSettings.count);
+	}
+
+	
+	void ParticleSystem::setTexture(const sf::Texture& t, const sf::FloatRect& rect)
+	{
+		tex = &t;
+		texSize = t.getSize();
+		texRect = sf::IntRect(texSize.x * rect.left, texSize.y * rect.top, texSize.x * rect.width, texSize.y * rect.height);
+		nSprites = utils::spritesForFloatRect(rect);
+		/*for (int i = 0; i < particles.size(); i+=4) {
+			enableParticle(i);
+		}*/
+	}
+
+	void ParticleSystem::setTexture(const sf::Texture& t, const sf::IntRect& rect)
+	{
+		tex = &t;
+		texSize = t.getSize();
+		texRect = rect;// sf::IntRect(texSize.x * rect.left, texSize.y * rect.top, texSize.x * rect.width, texSize.y * rect.height);
+		nSprites.x = texSize.x / rect.width;
+		nSprites.y = texSize.y / rect.height;
+	}
+
+	
+	void ParticleSystem::setParticleSettings(ps::Settings& particleSettings)
+	{
+		pSettings = particleSettings;
+	}
+
+	ps::Settings ParticleSystem::getSettings() const
+	{
+		return pSettings;
+	}
+
+	
+	void ParticleSystem::enableParticle(size_t idx) {
+		idx *= 4;
+		vertices[idx++].texCoords = sf::Vector2f(texRect.left, texRect.top); // top L	
+		vertices[idx++].texCoords = sf::Vector2f(texRect.left + texRect.width, texRect.top); // top R
+		vertices[idx++].texCoords = sf::Vector2f(texRect.left + texRect.width, texRect.top + texRect.height); // bottom R
+		vertices[idx].texCoords   = sf::Vector2f(texRect.left, texRect.top + texRect.height); // bottom L
+	}
+
+	
+	void ParticleSystem::enableParticleRandomSprite(size_t idx)
+	{
+		int spriteIdx = rng::rand(0, nSprites.x * nSprites.y);
+		enableParticle(idx, spriteIdx);
+	}
+
+	void ParticleSystem::enableParticle(size_t idx, size_t spriteIdx)
+	{
+		size_t xIdx = spriteIdx % nSprites.x;
+		size_t yIdx = spriteIdx / nSprites.x;
+		idx *= 4;
+		vertices[idx++].texCoords = sf::Vector2f(texRect.width * xIdx, texRect.height * yIdx); // top L	
+		vertices[idx++].texCoords = sf::Vector2f(texRect.width * (xIdx + 1), texRect.height * yIdx); // top R
+		vertices[idx++].texCoords = sf::Vector2f(texRect.width * (xIdx + 1), texRect.height * (yIdx + 1)); // bottom R
+		vertices[idx].texCoords = sf::Vector2f(texRect.width * xIdx, texRect.height * (yIdx + 1)); // bottom L
+	}
+
+	
+	void ParticleSystem::disableParticle(size_t idx) {
+		particles[idx].disable(vertices, idx);
+		/*idx *= 4;
+		sf::Vector2f empty(0, 0);
+		vertices[idx++].texCoords = empty; // top L	
+		vertices[idx++].texCoords = empty; // top R
+		vertices[idx++].texCoords = empty; // bottom R
+		vertices[idx].texCoords   = empty; // bottom L*/
+	}
+
+	
+	/*void ParticleSystem::emit(const ps::Settings& particleSettings)
+	{
+		pSettings = particleSettings;
+		particles[index].reset(pSettings);
+		if (index == 0) index = particles.size() - 1;
+		else index--;
+	}*/
+
+	
+	void ParticleSystem::emit(const sf::Vector2f& pos)
+	{
+		//std::cout << "emit index: " << index << "\n";
+		pSettings.pos = pos;
+		particles[index].reset(pSettings);
+		// enable the vertices:
+		if (pSettings.randomSprites) enableParticleRandomSprite(index);
+		else enableParticle(index); 
+		if (index == 0) index = particles.size() - 1;
+		else index--;
+	}
+
+	void ParticleSystem::emit(const sf::Vector2f& pos, const sf::Vector2f& dir)
+	{
+		pSettings.pos = pos;
+		pSettings.angleIni = utils::PI/2.0f + atan2f(dir.x, dir.y);
+		pSettings.angleEnd = utils::PI/2.0f + atan2f(dir.x, dir.y);
+		particles[index].reset(pSettings);
+		// enable the vertices:
+		if (pSettings.randomSprites) enableParticleRandomSprite(index);
+		else enableParticle(index);
+		if (index == 0) index = particles.size() - 1;
+		else index--;
+	}
+
+	void ParticleSystem::burst(const sf::Vector2f& center, const float& radius, int nParticles)
+	{
+		for (int i = 0; i < nParticles; i++)
+		{
+			float angle = rng::rand(0.0f, 2.0f * utils::PI);
+			float dist = rng::rand(0.0f, radius);
+			sf::Vector2f dir(cos(angle), sin(angle));
+			emit(center + (dist * dir));
+		}
+	}
+
+	void ParticleSystem::burstOut(const sf::Vector2f& center, const float& radius, int nParticles)
+	{
+		for (int i = 0; i < nParticles; i++)
+		{
+			float angle = rng::rand(0.0f, 2.0f * utils::PI);
+			float dist = rng::rand(0.0f, radius);
+			sf::Vector2f dir(cos(angle), sin(angle));
+			emit(center + (dist * dir), dir);
+		}
+	}
+	
+	void ParticleSystem::emitLinear(const sf::Vector2f& origin, const float& distance) {
+		emitLinear(origin, distance, std::abs(distance) / (pSettings.sizeEnd * 2));
+	}
+
+	void ParticleSystem::emitLinear(const sf::Vector2f& origin, const float& distance, int nParticles) {
+		sf::Vector2f p = origin;
+		for (int i = 0; i < nParticles; i++) {
+			emit(p);
+			p.x += std::floor(distance / nParticles);
+		}
+	}
+	
+	void ParticleSystem::update(sf::Time elapsed)
+	{
+		int i = 0;
+		for (auto& p : particles) {
+			bool died = p.update(elapsed, vertices, i);
+			if (!died && pSettings.animate) {
+				int frame = utils::lerp(nSprites.x * nSprites.y - 1, 0, p.ttl/pSettings.ttl); // get frame from ttl
+				enableParticle(i, frame); // set it
+			}
+			i++;
+		}
+	}
+
+	
+	void ParticleSystem::clear()
+	{
+		for (int i = 0; i < particles.size(); i++) 
+			disableParticle(i);
+	}
+
+
+	
+	void ParticleSystem::draw(sf::RenderTarget& target, sf::RenderStates states) const
+	{
+		// apply the transform
+		states.transform *= getTransform();
+
+		states.texture = tex;
+
+		target.draw(vertices, states);
+	}
+
+	void ParticleSystem::setAllParticlesPosition(sf::Vector2f pos) {
+		for (auto& p : particles) {
+			p.setPosition(pos);
+		}
+	}
+	
+}// Namespace particles
