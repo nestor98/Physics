@@ -68,12 +68,8 @@ void testIMGUI() {
     ImGui::SFML::Shutdown();
 }
 
-
-int main() {
-    //testRNG();
-    //testIMGUI();
+void particlesTest() {
     auto& rcs = Resources::getInstance(); // init resources
-
 
     sf::RenderWindow window(sf::VideoMode(1600, 900), "I <3 particles");
     window.setFramerateLimit(60);
@@ -81,5 +77,16 @@ int main() {
     auto idx = Resources::TextureIdx::smoke;
     ps::ParticleSystemTest psTest(window, rcs.getTexture(idx), rcs.getIntRects(idx)[0]);
     psTest.loop();
+}
+
+
+int main() {
+    //testRNG(); //testIMGUI(); // particlesTest()
+
+    sf::RenderWindow window(sf::VideoMode(1600, 900), "Orbits");
+    window.setFramerateLimit(60);
+    Orbit orbitApp(window, 2000, 200, 6);
+    orbitApp.loop();
+    
     return 0;
 }

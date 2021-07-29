@@ -1,5 +1,5 @@
 #include "RNG.h"
-
+#include "utils.h"
 namespace rng {
 	std::random_device rd;
 	std::mt19937 gen(rd());
@@ -27,5 +27,15 @@ namespace rng {
 
 	int randMax(int max) { // random int up to max, included
 		return rand(0, max);
+	}
+
+	sf::Vector2f rand2f()
+	{
+		float th = rand(0.0f, 2.0f * utils::PI);
+		return sf::Vector2f(cos(th),sin(th));
+	}
+	sf::Color randColor()
+	{
+		return sf::Color(rand(0,255), rand(0, 255), rand(0, 255));
 	}
 }

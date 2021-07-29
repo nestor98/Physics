@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include "utils.h"
+#include "RNG.h"
 
 
 namespace utils {
@@ -131,6 +132,11 @@ namespace utils {
 	sf::Vector2f clampAbs(const sf::Vector2f& val, const float& limit)
 	{
 		return sf::Vector2f(clampAbs(val.x, limit), clampAbs(val.y, limit));
+	}
+
+	sf::Vector2f perpendicular(const sf::Vector2f& v)
+	{
+		return rng::rand01()>0.5 ? sf::Vector2f(v.y, v.x) : sf::Vector2f(-v.y, v.x);
 	}
 
 	float lerp(float x, float y, float z) {

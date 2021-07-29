@@ -51,6 +51,9 @@ public:
 
 	}
 
+	void query() const {
+
+	}
 	// TODO: query in circle area
 
 

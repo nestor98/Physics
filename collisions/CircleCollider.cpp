@@ -2,12 +2,12 @@
 
 const sf::Vector2f& CircleCollider::getPos() const
 {
-	return p;
+	return pos;
 }
 
-void CircleCollider::setPos(const sf::Vector2f& pos)
+void CircleCollider::setPos(const sf::Vector2f& _pos)
 {
-	p = pos;
+	pos = _pos;
 }
 
 float CircleCollider::getR() const
@@ -20,14 +20,14 @@ void CircleCollider::setR(float _r)
 	r = _r;
 }
 
-CircleCollider::CircleCollider(const sf::Vector2f& pos, float rad) 
-	: p(pos), r(rad)
+CircleCollider::CircleCollider(const sf::Vector2f& _pos, float rad) 
+	: pos(_pos), r(rad)
 {
 }
 
 bool CircleCollider::collides(const CircleCollider& other)
 {
-	return utils::length(p - other.getPos()) >= (r + other.getR());
+	return utils::length(pos - other.getPos()) <= (r + other.getR());
 }
 
 bool CircleCollider::collides(const Collidable& other)
@@ -45,7 +45,7 @@ std::optional<Collision> CircleCollider::collision(const Collidable& other)
 std::optional<Collision> CircleCollider::collision(const CircleCollider& other)
 {
 
-	sf::Vector2f n = other.getPos() - p;
+	sf::Vector2f n = other.getPos() - pos;
 	float dist = utils::length(n);
 	float depth = dist - (r + other.getR());
 	if (depth > 0) return { Collision{depth, n / utils::length(n)} };
@@ -83,7 +83,8 @@ void destroyCollisions(std::vector<CircleCollider>& circles) {
 CollidableCircle::CollidableCircle(const sf::Vector2f& _pos, float _r)
 	: CircleCollider(_pos, _r), CircleShape(_r)
 {
-	setPosition(_pos);
+	CircleShape::setOrigin(_r,_r);
+	CircleShape::setPosition(_pos);
 }
 
 void CollidableCircle::setPos(const sf::Vector2f& pos)
@@ -96,4 +97,12 @@ void CollidableCircle::setR(float _r)
 {
 	CircleCollider::setR(_r);
 	CircleShape::setRadius(_r);
+}
+
+void CollidableCircle::move(const sf::Vector2f& m)
+{
+
+	CircleCollider::pos += m;
+	//std::cout << "pos: " << pos << "\n";
+	CircleShape::setPosition(pos);
 }

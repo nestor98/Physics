@@ -14,6 +14,7 @@
 
 // utils:
 #include "utils.h"
+#include "Line.hpp"
 
 // physics:
 #include "physics.h"
@@ -27,4 +28,7 @@
 
 // Resources singleton:
 #include "Resources.h"
+
+// Orbit app:
+#include "../apps/Orbit.h"
 

@@ -2,7 +2,8 @@
 #include "Collidable.h"
 class CircleCollider : public Collidable
 {
-	sf::Vector2f p;
+protected:
+	sf::Vector2f pos;
 	float r;
 public:
 	CircleCollider(const sf::Vector2f& pos, float rad);
@@ -19,9 +20,10 @@ public:
 	void setR(float _r);
 };
 
-class CollidableCircle : public CircleCollider, protected sf::CircleShape {
+class CollidableCircle : public CircleCollider, public sf::CircleShape {
 public:
 	CollidableCircle(const sf::Vector2f& _pos, float _r);
 	void setPos(const sf::Vector2f& pos);
 	void setR(float _r);
+	void move(const sf::Vector2f& m);
 };

@@ -8,6 +8,7 @@
 
 namespace utils {
 	constexpr float PI = 3.14159265f;
+	constexpr float MAX_ACC = 1e2;
 
 	float distanceToLine(sf::Vector2f l0, sf::Vector2f lf, sf::Vector2f p);
 	float parseFloat(std::istringstream& is, const char sep);
@@ -41,6 +42,9 @@ namespace utils {
 	bool inRange(float value, float min, float max);
 
 	sf::Vector2f clampAbs(const sf::Vector2f& val, const float& limit);
+
+
+	sf::Vector2f perpendicular(const sf::Vector2f& v);
 
 	float lerp(float x, float y, float z); // z must be between 0 and 1. Returns x if 0, z if 1, linearly interpolated if in between
 	sf::Color lerp(sf::Color x, sf::Color y, float z); // Same for colors (rgb interpolation)
